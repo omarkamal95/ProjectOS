@@ -7,7 +7,7 @@ void handleInterrupt21 (int , int , int, int);
 main(){
 	
 	char line[80];
-printString("Enter a line: \0");
+printString("Enter  line: \0");
 readString(line);
 printString(line);
 	while(0x1 == 0x1){
@@ -29,22 +29,30 @@ char* readString(char* chars) {
 	while (c != 0xd )
 	{
 		c= interrupt(0x16,0x0*256 ,0,0,0);
+
 		if (c!=0xd ){
-
-          if (c == 0x8)
+if (c == 0x8)
 		{
-			i--;
-			chars [i] = c;
-		}
+			if(i>0)
+			{
+				interrupt(0x10, 0xE*256+ c, 0, 0, 0);
+				i--;
+				chars[i] = c;
+				i++;
+				interrupt(0x10, 0xE*256, 0, 0, 0);
+				i--;
+					interrupt(0x10, 0xE*256+ c, 0, 0, 0);
 
-		interrupt(0x10, 0xE*256+ c, 0, 0, 0);
-		
+			}
+		}
 		else
 		{
+			interrupt(0x10, 0xE*256+ c, 0, 0, 0);
 		chars [i] = c;
 		i = i+1;
 		count = count+1;
 		}
+
 	}
 	}
 	chars [i+1] = 0xa;
