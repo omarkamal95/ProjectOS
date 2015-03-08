@@ -7,9 +7,9 @@ void handleInterrupt21 (int , int , int, int);
 main(){
 	
 	char line[80];
-	makeInterrupt21();
-	interrupt(0x21,1,line,0,0);
-	interrupt(0x21,0,line,0,0);
+printString("Enter a line: \0");
+readString(line);
+printString(line);
 	while(0x1 == 0x1){
 	}
 }
@@ -26,15 +26,19 @@ char* readString(char* chars) {
 	int i = 0;
 	int count=0;
 	char c = 0x1 ;
-	while (c != 0x20 || count < 80)
+	while (c != 0xd )
 	{
 		c= interrupt(0x16,0x0*256 ,0,0,0);
-		interrupt(0x10, 0xE*256+ c, 0, 0, 0);
-		
-		if (c == 0x8)
+		if (c!=0xd ){
+
+          if (c == 0x8)
 		{
 			i--;
+			chars [i] = c;
 		}
+
+		interrupt(0x10, 0xE*256+ c, 0, 0, 0);
+		
 		else
 		{
 		chars [i] = c;
@@ -42,8 +46,9 @@ char* readString(char* chars) {
 		count = count+1;
 		}
 	}
-	chars [i] = 0xa;
-	chars [i+1] = 0x0;
+	}
+	chars [i+1] = 0xa;
+	chars [i+2] = 0x0;
 	return chars;
 }
 char* readSector(char* buffer, int sector) {
