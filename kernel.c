@@ -3,15 +3,20 @@ char* readString(char*);
 char* readSector(char* , int);
 int div(int, int);
 int mod (int, int);
+void readFile (char*,char*);
 void handleInterrupt21 (int , int , int, int);
+
 main(){
 	
-	char line[80];
-printString("Enter  line: \0");
-readString(line);
-printString(line);
-	while(0x1 == 0x1){
-	}
+char buffer[13312]; /*this is the maximum size of a file*/
+makeInterrupt21();
+interrupt(0x21, 3, "messag\0", buffer, 0); /*read the file into buffer*/
+interrupt(0x21, 0, buffer, 0, 0); /*print out the file*/
+/*printString("hello \0");
+*/while(true){
+}/*hang up*/
+
+
 }
 
 void printString(char* chars) {	
@@ -30,30 +35,28 @@ char* readString(char* chars) {
 	{
 		c= interrupt(0x16,0x0*256 ,0,0,0);
 
-		if (c!=0xd ){
-if (c == 0x8)
-		{
-			if(i>0)
-			{
+		if (c!= 0xd ) {
+			if (c == 0x8) {
+				if(i>0)
+					{
+						interrupt(0x10, 0xE*256+ c, 0, 0, 0);
+						i--;
+						chars[i] = c;
+						i++;
+						interrupt(0x10, 0xE*256, 0, 0, 0);
+						i--;
+						interrupt(0x10, 0xE*256+ c, 0, 0, 0);
+
+					}
+				}
+			else {
 				interrupt(0x10, 0xE*256+ c, 0, 0, 0);
-				i--;
-				chars[i] = c;
-				i++;
-				interrupt(0x10, 0xE*256, 0, 0, 0);
-				i--;
-					interrupt(0x10, 0xE*256+ c, 0, 0, 0);
-
+				chars [i] = c;
+				i = i+1;
+				count = count+1;
 			}
-		}
-		else
-		{
-			interrupt(0x10, 0xE*256+ c, 0, 0, 0);
-		chars [i] = c;
-		i = i+1;
-		count = count+1;
-		}
 
-	}
+		}
 	}
 	chars [i+1] = 0xa;
 	chars [i+2] = 0x0;
@@ -83,6 +86,76 @@ int mod (int x, int y) {
 	return x;
 }
 
+
+
+void readFile(char* fname, char* buffer){ 
+	char array [512];
+	int sectors [26];
+/*	int sectors [26];*/
+
+int j=0;
+while (fname[j]!= 0){ 
+j = j+1; 
+}
+
+readSector(array , 2);
+
+int i = 0;
+int count=0;
+int flag = 0;
+
+while(i< 512){ 
+ if (array[i] == fname[count]) {
+    flag = 1; 
+   if (count == j-1) {
+    count = 6;
+    int k= 0;
+    while (array[count] != 0x00 && count < 32){ 
+     sectors [k] = array[count];
+     k = k+1;
+     count = count +1;
+    }
+    break;
+   } else {
+   i = i+1;
+   count = count +1;
+}
+ } else { 
+    i = i+31;
+    count = 0;
+ }
+}
+
+if (flag == 0){ 
+return; }
+
+
+int r = 0;
+int buffCount =0;
+while (r <26 && sectors[r] != 0x00){ 
+char temp[512];
+
+readSector(temp, sectors[r]);
+buffer[buffCount] = 512;
+buffCount = buffCount+1;
+
+int l = 0;
+while (l<512){ 
+buffer[buffCount] = temp [l];
+l = l+1;
+buffCount = buffCount +1;
+}
+
+
+
+}
+
+
+
+
+
+}
+
 void handleInterrupt21 (int AX, int BX, int CX, int DX) {
 	if (AX == 0)
 	{
@@ -95,6 +168,10 @@ void handleInterrupt21 (int AX, int BX, int CX, int DX) {
 	else if (AX == 2)
 	{
 		readSector(BX, CX);
+	}
+	else if (AX == 3)
+	{
+		readFile(BX, CX);
 	}
 	else
 	{
