@@ -12,9 +12,8 @@ char buffer[13312]; /*this is the maximum size of a file*/
 makeInterrupt21();
 interrupt(0x21, 3, "messag\0", buffer, 0); /*read the file into buffer*/
 interrupt(0x21, 0, buffer, 0, 0); /*print out the file*/
-/*printString("hello \0");
-*/while(true){
-}/*hang up*/
+printString("hellhho \\\0");
+while(1);	 /*hang up*/
 
 
 }
@@ -92,37 +91,43 @@ void readFile(char* fname, char* buffer){
 	char array [512];
 	int sectors [26];
 /*	int sectors [26];*/
-
-int j=0;
-while (fname[j]!= 0){ 
-j = j+1; 
-}
+int r = 0;
+int buffCount =0;
+int l = 0;
+char temp[512];
+  int k= 0;
+    int count=0;
+    int smalli = 0;
+    int secnum = 0;
+    int flag = 0;
+    int i =0;
 
 readSector(array , 2);
 
-int i = 0;
-int count=0;
-int flag = 0;
+     k= 0;
+     count=0;
 
 while(i< 512){ 
- if (array[i] == fname[count]) {
-    flag = 1; 
-   if (count == j-1) {
-    count = 6;
-    int k= 0;
-    while (array[count] != 0x00 && count < 32){ 
-     sectors [k] = array[count];
+ if (array[smalli] == fname[count]) {
+    
+   if (fname[count+1] == 0) {
+   	flag = 1; 
+    smalli = 6+ i;
+   k= 0;
+    while (smalli < i+32){ 
+     sectors [k] = array[smalli];
      k = k+1;
-     count = count +1;
+     smalli = smalli +1;
     }
     break;
    } else {
-   i = i+1;
+   smalli = smalli+1;
    count = count +1;
 }
  } else { 
-    i = i+31;
+    i = i+32;
     count = 0;
+    smalli = i;
  }
 }
 
@@ -130,17 +135,18 @@ if (flag == 0){
 return; }
 
 
-int r = 0;
-int buffCount =0;
-while (r <26 && sectors[r] != 0x00){ 
-char temp[512];
+ r = 0;
+buffCount =0;
+while (r <26){ 
 
-readSector(temp, sectors[r]);
+secnum = sectors[r] - '0';
+readSector(temp,secnum);
 buffer[buffCount] = 512;
 buffCount = buffCount+1;
 
-int l = 0;
-while (l<512){ 
+l = 0;
+while (l<512){
+
 buffer[buffCount] = temp [l];
 l = l+1;
 buffCount = buffCount +1;
