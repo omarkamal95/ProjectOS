@@ -7,12 +7,13 @@ void readFile (char*,char*);
 void handleInterrupt21 (int , int , int, int);
 
 main(){
-	
-char buffer[13312]; /*this is the maximum size of a file*/
+
+char buffer[13312]; 
+printString("hellhho \0");/*this is the maximum size of a file*/
 makeInterrupt21();
 interrupt(0x21, 3, "messag\0", buffer, 0); /*read the file into buffer*/
 interrupt(0x21, 0, buffer, 0, 0); /*print out the file*/
-printString("hellhho \\\0");
+
 while(1);	 /*hang up*/
 
 
@@ -98,7 +99,7 @@ char temp[512];
   int k= 0;
     int count=0;
     int smalli = 0;
-    int secnum = 0;
+    char secnum;
     int flag = 0;
     int i =0;
 
@@ -139,7 +140,7 @@ return; }
 buffCount =0;
 while (r <26){ 
 
-secnum = sectors[r] - '0';
+secnum = sectors[r];
 readSector(temp,secnum);
 buffer[buffCount] = 512;
 buffCount = buffCount+1;
