@@ -10,10 +10,8 @@ void terminate();
 
 main(){
 
-printString("hellhhfo \0");
 makeInterrupt21();
-interrupt(0x21, 4, "tstpr2\0", 0x2000, 0);
-printString("HANG UP YA 7ayawan \0");
+interrupt(0x21, 4, "shell\0", 0x2000, 0);
 while(1);
 
 }
@@ -30,7 +28,7 @@ char* readString(char* chars) {
 	int i = 0;
 	int count=0;
 	char c = 0x1;
-	while (c != 0xd ) {
+	while (c != 0xd) {
 		c= interrupt(0x16,0x0*256 ,0,0,0);
 		if (c!= 0xd ) {
 			if (c == 0x8) {
@@ -50,12 +48,16 @@ char* readString(char* chars) {
 				i = i+1;
 				count = count+1;
 			}
-
 		}
 	}
-
 	chars [i+1] = 0xa;
-	chars [i+2] = 0x0;
+	chars [i+2] = 0xd;
+
+	interrupt(0x10, 0xE*256+ 0xa, 0, 0, 0);
+	interrupt(0x10, 0xE*256+ 0xd, 0, 0, 0);
+
+	chars [i+3] = 0xa;
+	chars [i+4] = 0x0;
 	return chars;
 }
 char* readSector(char* buffer, int sector) {
@@ -159,7 +161,8 @@ void executeProgram(char* name, int segment) {
 
 
 void terminate(){ 
- while(1);
+ 
+ 	interrupt(0x21, 4, "shell\0", 0x2000, 0);
 
 }
 
