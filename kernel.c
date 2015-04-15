@@ -3,12 +3,13 @@ char* readString(char*);
 char* readSector(char* , int);
 int div(int, int);
 int mod (int, int);
-void readFile (char*,char*);
 void handleInterrupt21 (int , int , int, int);
+void readFile (char*,char*);
+void executeProgram(char*, int);
 
 main(){
 
-printString("hellhho \0");
+printString("hellhhfo \0");
 makeInterrupt21();
 interrupt(0x21, 4, "tstprg\0", 0x2000, 0);
 printString("HANG UP YA 7ayawan \0");
@@ -149,15 +150,15 @@ void readFile(char* fname, char* buffer){
 }
 
 void executeProgram(char* name, int segment) {
-	char* buffer; 
+	char buffer [13312]; 
 	int bufferCount = 0;
 	int addressCount = 0; 
 	
 	readFile(name, buffer);
-	while (buffer[bufferCount] != 0) {
+	while (bufferCount < 13312) {
 		putInMemory (segment, addressCount, buffer[bufferCount]);
-		bufferCount++;
-		addressCount++;
+		bufferCount = bufferCount+1;
+		addressCount = addressCount +1;
 	}
 	
 	launchProgram(segment);
