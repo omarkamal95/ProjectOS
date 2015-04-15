@@ -44,7 +44,7 @@ void checkCommand (char* command) {
    				viewFlag = viewFlag +1;
 
             } 
-            else if (command [i] == exec[i]) 
+             if (command [i] == exec[i]) 
             { 
             	if(i == 6) { 
    						if(command[i+1] == 0x20) { 
