@@ -6,12 +6,13 @@ int mod (int, int);
 void handleInterrupt21 (int , int , int, int);
 void readFile (char*,char*);
 void executeProgram(char*, int);
+void terminate();
 
 main(){
 
 printString("hellhhfo \0");
 makeInterrupt21();
-interrupt(0x21, 4, "tstprg\0", 0x2000, 0);
+interrupt(0x21, 4, "tstpr2\0", 0x2000, 0);
 printString("HANG UP YA 7ayawan \0");
 while(1);
 
@@ -132,18 +133,8 @@ void readFile(char* fname, char* buffer){
 		secnum = sectors[r];
 		readSector(buffer + buffCount,secnum);
 		buffCount += 512;
-		r += 1;
-		// ANA SHELT EL 2araf el ta7t dah w zawedt el talat sotoor el foo2
-		/*buffer[buffCount] = 512;
-		buffCount = buffCount+1;
-
-		l = 0;
-		while (l<512){
-			buffer[buffCount] = temp [l];
-			l = l+1;
-			buffCount = buffCount +1;
-		}
-		*/
+		r = r+ 1;
+	
 
 	}
 
@@ -163,6 +154,12 @@ void executeProgram(char* name, int segment) {
 	
 	launchProgram(segment);
 
+
+}
+
+
+void terminate(){ 
+ while(1);
 
 }
 
@@ -186,6 +183,10 @@ void handleInterrupt21 (int AX, int BX, int CX, int DX) {
 	else if (AX == 4)
 	{
 		executeProgram(BX, CX);
+	}
+	else if (AX == 5)
+	{
+		terminate();
 	}
 	else
 	{

@@ -22,5 +22,5 @@ dd if=kernel of=floppya.img bs=512 conv=notrunc seek=3
 ./loadFile message.txt
 ./loadFile tstprg
 ./loadFile tstpr2
-# ./loadFile shell
+./loadFile shell
 bochs -f conf.bxrc
